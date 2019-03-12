@@ -5,7 +5,10 @@ import * as k8s from "@pulumi/kubernetes";
 const zookeeper = new k8s.helm.v2.Chart("zookeeper", {
     repo: "incubator",
     version: "1.2.0",
-    chart: "zookeeper"
+    chart: "zookeeper",
+    values: {
+        persistence: { size : "1Gi" } 
+    }
 });
 
 // Deploy the latest version of the incubator/kafka chart.

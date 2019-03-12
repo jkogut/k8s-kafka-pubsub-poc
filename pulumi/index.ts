@@ -1,5 +1,8 @@
 import * as k8s from "@pulumi/kubernetes";
+import * as pulumi from "@pulumi/pulumi";
 
+// need to initialize pulumi config for secret prod/cons images
+let config = new pulumi.Config();
 
 // Deploy the latest version of the incubator/zookeeper chart.
 const zookeeper = new k8s.helm.v2.Chart("zookeeper", {
@@ -7,7 +10,7 @@ const zookeeper = new k8s.helm.v2.Chart("zookeeper", {
     version: "1.2.0",
     chart: "zookeeper",
     values: {
-        persistence: { size : "1Gi" } 
+        persistence: { size : "1Gi" }
     }
 });
 
@@ -46,4 +49,46 @@ const kafka = new k8s.helm.v2.Chart("kafka", {
     }
 });
 
+// Kafka producer
+let prodImage = config.require("prodImage")
 
+const prodName = "go-producer";
+const prodLabels = { app: prodName };
+const goKafkaProducer = new k8s.apps.v1beta1.Deployment(prodName, {
+    spec: {
+        selector: { matchLabels: prodLabels },
+        replicas: 1,
+        template: {
+            metadata: { labels: prodLabels },
+            spec: { containers: [
+                        { 
+                            name: prodName, 
+                            image: prodImage,
+                            resources: { requests: { cpu: "50m", memory: "100Mi" } }
+                        }]
+                    }
+        }
+    }
+});
+
+// Kafka consumer
+let consImage = config.require("consImage");
+
+const consName = "go-kafka-consumer";
+const consLabels = { prod: consName };
+const goKafkaConsumer = new k8s.apps.v1beta1.Deployment(consName, {
+    spec: {
+        selector: { matchLabels: consLabels },
+        replicas: 1,
+        template: {
+            metadata: { labels: consLabels },
+            spec: { containers: [
+                        { 
+                            name: consName, 
+                            image: consImage,
+                            resources: { requests: { cpu: "50m", memory: "100Mi" } }
+                        }]
+                    }
+        }
+    }
+});

@@ -29,11 +29,10 @@ const kafka = new k8s.helm.v2.Chart("kafka", {
             partitions: 8,
             replicationFactor: 3
         },   
-        {   
-            name: "test-topic3",
+        {   // topic for pub-sub app written in golang   
+            name: "golang-topic",
             partitions: 8,
-            replicationFactor: 3,
-            defaultConfig: "segment.bytes,segment.ms"
+            replicationFactor: 3
         }   
 
     ],  // zookeeper config for kafka brokers
@@ -43,3 +42,5 @@ const kafka = new k8s.helm.v2.Chart("kafka", {
         }
     }
 });
+
+

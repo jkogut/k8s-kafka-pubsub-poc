@@ -52,7 +52,7 @@ const kafka = new k8s.helm.v2.Chart("kafka", {
 // Kafka producer
 let prodImage = config.require("prodImage")
 
-const prodName = "go-producer";
+const prodName = "go-kafka-producer";
 const prodLabels = { app: prodName };
 const goKafkaProducer = new k8s.apps.v1beta1.Deployment(prodName, {
     spec: {

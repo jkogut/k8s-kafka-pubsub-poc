@@ -1,3 +1,14 @@
+#Prerequisites:
+
+* up and running **pulumi**
+* up and runnnig **k8s** cluster
+* helm in client mode (on **Linux**): 
+
+```js
+$ sudo snap install helm --classic
+$ helm init --client-only
+$ helm repo add incubator https://kubernetes-charts-incubator.storage.googleapis.com/
+```
 
 1. Configure `pulumi` to use your secret consumer/producer images: (add `--secret` option to encrypt) 
 
